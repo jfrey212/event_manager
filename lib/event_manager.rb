@@ -45,3 +45,5 @@ contents.each do |row|
 
   puts "#{name} #{zipcode} #{legislators}"
 end
+
+template_letter = File.read('form_letter.html')
