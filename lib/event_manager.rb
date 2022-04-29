@@ -1,6 +1,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'time'
 
 # to_s deals with empty values (nil) -> nil.to_s = ""
 # to_s does not affect the non-nil values
@@ -10,6 +11,20 @@ require 'erb'
 # does nothing to a code with exactly 5 digits
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
+end
+
+def clean_phone_number(number)
+  clean_number = number.gsub('(', '').gsub(')', '').gsub('-', '').gsub(' ', '').gsub('.', '')
+
+  if clean_number.length < 10 || clean_number.length > 11
+    clean_number = '0000000000'
+  elsif clean_number.length == 11 && clean_number[0] == '1'
+    clean_number.slice(1..-1)
+  elsif clean_number.length == 11 && clean_number[0] != '1'
+    clean_number = '0000000000'
+  else
+    clean_number
+  end
 end
 
 def legislators_by_zipcode(zip)
@@ -53,6 +68,8 @@ contents.each do |row|
   name = row[:first_name]
 
   zipcode = clean_zipcode(row[:zipcode])
+
+  homephone = clean_phone_number(row[:homephone])
 
   legislators = legislators_by_zipcode(zipcode)
 
