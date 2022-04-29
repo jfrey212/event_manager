@@ -31,7 +31,7 @@ end
 puts 'Event Manager Initialized'
 
 contents = CSV.open(
-  '../event_attendees.csv',
+  'event_attendees.csv',
   headers: true,
   header_converters: :symbol
 )
