@@ -2,6 +2,7 @@ require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
 require 'time'
+require 'date'
 
 # to_s deals with empty values (nil) -> nil.to_s = ""
 # to_s does not affect the non-nil values
@@ -63,6 +64,9 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
+time_frequencies = Hash.new(0)
+dayofweek_frequencies = Hash.new(0)
+
 contents.each do |row|
   id = row[0]
   name = row[:first_name]
@@ -75,5 +79,19 @@ contents.each do |row|
 
   form_letter = erb_template.result(binding)
 
+  time = Time.strptime(row[:regdate], "%D %k:%M")
+
+  date = Date.strptime(row[:regdate], "%D %k:%M")
+  day_of_week = date.strftime("%A")
+
   save_thank_you_letter(id, form_letter)
+
+  time_frequencies[time.hour] += 1
+  dayofweek_frequencies[day_of_week] += 1
+
 end
+
+peak_hour = time_frequencies.max_by { |k,v| v }
+puts "#{peak_hour[0]}:00 is the peak hour"
+peak_day = dayofweek_frequencies.max_by { |k,v| v }
+puts "#{peak_day[0]} is the peak day of the week"
