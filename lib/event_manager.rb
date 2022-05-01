@@ -79,19 +79,18 @@ contents.each do |row|
 
   form_letter = erb_template.result(binding)
 
-  time = Time.strptime(row[:regdate], "%D %k:%M")
+  time = Time.strptime(row[:regdate], '%D %k:%M')
 
-  date = Date.strptime(row[:regdate], "%D %k:%M")
-  day_of_week = date.strftime("%A")
+  date = Date.strptime(row[:regdate], '%D %k:%M')
+  day_of_week = date.strftime('%A')   # I looked up %A as the answer, the prompt says you can use Date#wday
 
   save_thank_you_letter(id, form_letter)
 
   time_frequencies[time.hour] += 1
   dayofweek_frequencies[day_of_week] += 1
-
 end
 
-peak_hour = time_frequencies.max_by { |k,v| v }
+peak_hour = time_frequencies.max_by { |_k, v| v }
 puts "#{peak_hour[0]}:00 is the peak hour"
-peak_day = dayofweek_frequencies.max_by { |k,v| v }
+peak_day = dayofweek_frequencies.max_by { |_k, v| v }
 puts "#{peak_day[0]} is the peak day of the week"
